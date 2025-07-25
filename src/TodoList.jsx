@@ -1,9 +1,12 @@
+import TodoListItem from './TodoListItem'
 
 function TodoList({todos}) {
 
     return (
         <ul>
-            {todos.map(todo => <li key={todo.id}>{todo.title}</li>)}
+            {todos.map(todo => {
+                return <TodoListItem key={todo.id} title={todo.title} />;
+            })}
         </ul>
     );
 }
