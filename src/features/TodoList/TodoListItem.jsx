@@ -21,10 +21,6 @@ function TodoListItem({
         setWorkingTitle(e.target.value);
     };
 
-    const handleSelection = () => {
-        setCurrEditingId(todo.id)
-    }
-
     const handleUpdate = (e) => {
         e.preventDefault();
         onUpdateTodo(todo, workingTitle);
@@ -57,7 +53,7 @@ function TodoListItem({
                             checked={todo.isCompleted}
                             onChange={onCompleteTodo}
                         />
-                        <span onClick={() => handleSelection(true)}>{todo.title}</span>
+                        <span onClick={() => setCurrEditingId(todo.id)}>{todo.title}</span>
                     </>
                 )}
             </form>
