@@ -1,24 +1,34 @@
 import TextInputWithLabel from "../../shared/TextInputWithLabel";
 import { useState, useEffect, useRef } from "react";
 
-function TodoListItem({ todo, onCompleteTodo, onUpdateTodo }) {
-    const [isEditing, setIsEditing] = useState(false);
+function TodoListItem({
+    todo,
+    onCompleteTodo,
+    onUpdateTodo,
+    currEditingId,
+    setCurrEditingId
+}) {
+    const isEditing = currEditingId === todo.id;
     const [workingTitle, setWorkingTitle] = useState(todo.title);
     const inputRef = useRef(null);
 
     const handleCancel = () => {
         setWorkingTitle(todo.title);
-        setIsEditing(false);
+        setCurrEditingId(null);
     };
 
     const handleEdit = (e) => {
         setWorkingTitle(e.target.value);
     };
 
+    const handleSelection = () => {
+        setCurrEditingId(todo.id)
+    }
+
     const handleUpdate = (e) => {
         e.preventDefault();
         onUpdateTodo(todo, workingTitle);
-        setIsEditing(false);
+        setCurrEditingId(null);
     };
 
     useEffect(() => {
@@ -47,7 +57,7 @@ function TodoListItem({ todo, onCompleteTodo, onUpdateTodo }) {
                             checked={todo.isCompleted}
                             onChange={onCompleteTodo}
                         />
-                        <span onClick={() => setIsEditing(true)}>{todo.title}</span>
+                        <span onClick={() => handleSelection(true)}>{todo.title}</span>
                     </>
                 )}
             </form>
