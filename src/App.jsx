@@ -53,11 +53,6 @@ function App() {
 
   }
 
-  // const addToDo = async (title) => {
-  //   const newTodo = { id: Date.now(), title, isCompleted: false }
-  //   setTodoList([...todoList, newTodo])
-  // }
-
   const addToDo = async (title) => {
     const newTodo = { id: Date.now(), title, isCompleted: false }
     const payload = {
@@ -112,22 +107,60 @@ function App() {
       if (todo.id === selectedToDo.id) {
         return { ...todo, isCompleted: true }
       } else {
-        console.log(todo)
         return todo
       }
     })
     setTodoList(updatedTodos)
   }
 
-  const updateTodo = (editedTodo, workingTitle) => {
-    const updatedTodos = todoList.map((todo) => {
-      if (todo.id === editedTodo.id) {
-        return { ...todo, title: workingTitle }
-      } else {
-        return todo
+  const updateTodo = async (editedTodo, workingTitle) => {
+    const payload = {
+      records: [
+        {
+          id: editedTodo.id,
+          fields: {
+            title: workingTitle,
+            isCompleted: editedTodo.isCompleted,
+          },
+        },
+      ],
+    };
+
+    const options = {
+      'method': 'PATCH',
+      'headers': {
+        'Authorization': token,
+        'Content-Type': 'application/json',
+      },
+      'body': JSON.stringify(payload),
+    }
+
+    try {
+      setIsSaving(true)
+
+      const response = await fetch(url, options);
+
+      if (!response.ok) {
+        setErrorMessage(`Response status: ${response.status}`)
+        return
       }
-    })
-    setTodoList(updatedTodos)
+
+      const updatedTodos = todoList.map((todo) => {
+        if (todo.id === editedTodo.id) {
+          return { ...todo, title: workingTitle }
+        } else {
+          return todo
+        }
+      })
+      setTodoList(updatedTodos)
+
+    } catch (error) {
+      console.error('Cannot edit ToDo')
+      setErrorMessage(`Response status: ${error.status}`)
+      return
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   const filteredTodoList = todoList.filter((todo) => todo.isCompleted != true)
