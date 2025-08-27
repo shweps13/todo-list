@@ -2,6 +2,7 @@ import './App.css'
 import { useState, useEffect } from 'react'
 import TodoList from './features/TodoList/TodoList'
 import TodoForm from './features/TodoForm'
+import { dbCall } from './api/airtable'
 
 function App() {
   const [todoList, setTodoList] = useState([]);
@@ -14,38 +15,20 @@ function App() {
     fetchTodos();
   }, [])
 
-  const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
-  const token = `Bearer ${import.meta.env.VITE_PAT}`;
-
   const fetchTodos = async () => {
-    const options = {
-      'method': 'GET',
-      'headers': {
-        'Content-Type': 'application/json',
-        'Authorization': token
-      }
-    }
-
     try {
-      const response = await fetch(url, options);
-
-      if (!response.ok) {
-        setErrorMessage(`Response status: ${response.status}`)
-        return
-      }
-
-      const result = await response.json();
+      const result = await dbCall('GET');
 
       const fetchedToDos = result.records.map((record) => {
         const restructedToDo = { id: record.id }
         restructedToDo.isCompleted = record.fields.isCompleted ?? false;
         restructedToDo.title = record.fields.title ?? "";
-
         return restructedToDo
       })
 
       setTodoList(fetchedToDos)
     } catch (error) {
+      console.log(error)
       setErrorMessage(error.status)
     } finally {
       setIsLoading(false)
@@ -54,43 +37,19 @@ function App() {
   }
 
   const addToDo = async (title) => {
-    const newTodo = { id: Date.now(), title, isCompleted: false }
-    const payload = {
-      records: [
-        {
-          fields: {
-            title: newTodo.title,
-            isCompleted: newTodo.isCompleted,
-          },
-        },
-      ],
-    };
-
-    const options = {
-      'method': 'POST',
-      'headers': {
-        'Authorization': token,
-        'Content-Type': 'application/json',
-      },
-      'body': JSON.stringify(payload),
-    }
-
     try {
       setIsSaving(true)
-      const response = await fetch(url, options);
 
-      if (!response.ok) {
-        setErrorMessage(`Response status: ${response.status}`)
-        return
-      }
+      const result = await dbCall('POST', {
+        records: [{ fields: { title, isCompleted: false } }],
+      });
 
-      const { records } = await response.json();
-
+      const rec = result.records?.[0];
       const savedTodo = {
-        id: records[0].id,
-        title: records[0].fields.title,
-        isCompleted: false
-      }
+        id: rec.id,
+        title: rec.fields?.title ?? "",
+        isCompleted: !!rec.fields?.isCompleted,
+      };
 
       setTodoList([...todoList, savedTodo]);
 
@@ -103,37 +62,15 @@ function App() {
   }
 
   const completeTodo = async (selectedToDo) => {
-    console.log('selectedToDo', selectedToDo)
-    const payload = {
-      records: [
-        {
-          id: selectedToDo.id,
-          fields: {
-            title: selectedToDo.title,
-            isCompleted: true,
-          },
-        },
-      ],
-    };
-
-    const options = {
-      'method': 'PATCH',
-      'headers': {
-        'Authorization': token,
-        'Content-Type': 'application/json',
-      },
-      'body': JSON.stringify(payload),
-    }
-
     try {
       setIsSaving(true)
 
-      const response = await fetch(url, options);
-
-      if (!response.ok) {
-        setErrorMessage(`Response status: ${response.status}`)
-        return
-      }
+      await dbCall('PATCH', {
+        records: [{
+          id: selectedToDo.id,
+          fields: { title: selectedToDo.title, isCompleted: true },
+        }],
+      });
 
       const updatedTodos = todoList.map((todo) => {
         if (todo.id === selectedToDo.id) {
@@ -155,36 +92,15 @@ function App() {
   }
 
   const updateTodo = async (editedTodo, workingTitle) => {
-    const payload = {
-      records: [
-        {
-          id: editedTodo.id,
-          fields: {
-            title: workingTitle,
-            isCompleted: editedTodo.isCompleted,
-          },
-        },
-      ],
-    };
-
-    const options = {
-      'method': 'PATCH',
-      'headers': {
-        'Authorization': token,
-        'Content-Type': 'application/json',
-      },
-      'body': JSON.stringify(payload),
-    }
-
     try {
       setIsSaving(true)
 
-      const response = await fetch(url, options);
-
-      if (!response.ok) {
-        setErrorMessage(`Response status: ${response.status}`)
-        return
-      }
+      await dbCall('PATCH', {
+        records: [{
+          id: editedTodo.id,
+          fields: { title: workingTitle, isCompleted: editedTodo.isCompleted },
+        }],
+      });
 
       const updatedTodos = todoList.map((todo) => {
         if (todo.id === editedTodo.id) {
