@@ -102,15 +102,56 @@ function App() {
     }
   }
 
-  const completeTodo = (selectedToDo) => {
-    const updatedTodos = todoList.map((todo) => {
-      if (todo.id === selectedToDo.id) {
-        return { ...todo, isCompleted: true }
-      } else {
-        return todo
+  const completeTodo = async (selectedToDo) => {
+    console.log('selectedToDo', selectedToDo)
+    const payload = {
+      records: [
+        {
+          id: selectedToDo.id,
+          fields: {
+            title: selectedToDo.title,
+            isCompleted: true,
+          },
+        },
+      ],
+    };
+
+    const options = {
+      'method': 'PATCH',
+      'headers': {
+        'Authorization': token,
+        'Content-Type': 'application/json',
+      },
+      'body': JSON.stringify(payload),
+    }
+
+    try {
+      setIsSaving(true)
+
+      const response = await fetch(url, options);
+
+      if (!response.ok) {
+        setErrorMessage(`Response status: ${response.status}`)
+        return
       }
-    })
-    setTodoList(updatedTodos)
+
+      const updatedTodos = todoList.map((todo) => {
+        if (todo.id === selectedToDo.id) {
+          return { ...todo, isCompleted: true }
+        } else {
+          return todo
+        }
+      })
+      setTodoList(updatedTodos)
+
+
+    } catch (error) {
+      console.error('Cannot complete ToDo')
+      setErrorMessage(`Response status: ${error.message}`)
+      return
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   const updateTodo = async (editedTodo, workingTitle) => {
