@@ -9,15 +9,17 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [sortField, setSortField] = useState("createdTime");
+  const [sortDirection, setSortDirection] = useState("desc");
 
   useEffect(() => {
     setIsLoading(true)
     fetchTodos();
-  }, [])
+  }, [sortDirection, sortField])
 
   const fetchTodos = async () => {
     try {
-      const result = await dbCall('GET');
+      const result = await dbCall('GET', null, sortField, sortDirection);
 
       const fetchedToDos = result.records.map((record) => {
         const restructedToDo = { id: record.id }
@@ -42,7 +44,7 @@ function App() {
 
       const result = await dbCall('POST', {
         records: [{ fields: { title, isCompleted: false } }],
-      });
+      }, sortField, sortDirection);
 
       const rec = result.records?.[0];
       const savedTodo = {
@@ -70,7 +72,7 @@ function App() {
           id: selectedToDo.id,
           fields: { title: selectedToDo.title, isCompleted: true },
         }],
-      });
+      }, sortField, sortDirection);
 
       const updatedTodos = todoList.map((todo) => {
         if (todo.id === selectedToDo.id) {
@@ -100,7 +102,7 @@ function App() {
           id: editedTodo.id,
           fields: { title: workingTitle, isCompleted: editedTodo.isCompleted },
         }],
-      });
+      }, sortField, sortDirection);
 
       const updatedTodos = todoList.map((todo) => {
         if (todo.id === editedTodo.id) {
