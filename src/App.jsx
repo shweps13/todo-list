@@ -12,15 +12,16 @@ function App() {
   const [errorMessage, setErrorMessage] = useState("");
   const [sortField, setSortField] = useState("createdTime");
   const [sortDirection, setSortDirection] = useState("desc");
+  const [queryString, setQueryString] = useState("");
 
   useEffect(() => {
     setIsLoading(true)
     fetchTodos();
-  }, [sortDirection, sortField])
+  }, [sortDirection, sortField, queryString])
 
   const fetchTodos = async () => {
     try {
-      const result = await dbCall('GET', null, sortField, sortDirection);
+      const result = await dbCall('GET', null, { sortField, sortDirection, queryString });
 
       const fetchedToDos = result.records.map((record) => {
         const restructedToDo = { id: record.id }
@@ -45,7 +46,7 @@ function App() {
 
       const result = await dbCall('POST', {
         records: [{ fields: { title, isCompleted: false } }],
-      }, sortField, sortDirection);
+      }, { sortField, sortDirection, queryString });
 
       const rec = result.records?.[0];
       const savedTodo = {
@@ -73,7 +74,7 @@ function App() {
           id: selectedToDo.id,
           fields: { title: selectedToDo.title, isCompleted: true },
         }],
-      }, sortField, sortDirection);
+      }, { sortField, sortDirection, queryString });
 
       const updatedTodos = todoList.map((todo) => {
         if (todo.id === selectedToDo.id) {
@@ -103,7 +104,7 @@ function App() {
           id: editedTodo.id,
           fields: { title: workingTitle, isCompleted: editedTodo.isCompleted },
         }],
-      }, sortField, sortDirection);
+      }, { sortField, sortDirection, queryString });
 
       const updatedTodos = todoList.map((todo) => {
         if (todo.id === editedTodo.id) {
@@ -131,7 +132,7 @@ function App() {
       <TodoForm addToDo={addToDo} isSaving={isSaving} />
       <TodoList todos={filteredTodoList} onCompleteTodo={completeTodo} onUpdateTodo={updateTodo} isLoading={isLoading} />
       <hr />
-      <TodosViewForm sortField={sortField} setSortField={setSortField} sortDirection={sortDirection} setSortDirection={setSortDirection} />
+      <TodosViewForm sortField={sortField} setSortField={setSortField} sortDirection={sortDirection} setSortDirection={setSortDirection} queryString={queryString} setQueryString={setQueryString}/>
       {errorMessage != "" ?
         <div>
           <hr />
