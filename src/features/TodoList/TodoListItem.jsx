@@ -31,7 +31,7 @@ function TodoListItem({
         if (isEditing && inputRef.current) {
             inputRef.current.focus();
         }
-    }, [isEditing]);
+    }, [isEditing, todo]);
 
     return (
         <li>
