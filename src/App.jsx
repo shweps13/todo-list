@@ -2,6 +2,7 @@ import './App.css'
 import { useState, useEffect } from 'react'
 import TodoList from './features/TodoList/TodoList'
 import TodoForm from './features/TodoForm'
+import TodosViewForm from './features/TodosViewForm'
 import { dbCall } from './api/airtable'
 
 function App() {
@@ -129,6 +130,8 @@ function App() {
       <h1>Todo List</h1>
       <TodoForm addToDo={addToDo} isSaving={isSaving} />
       <TodoList todos={filteredTodoList} onCompleteTodo={completeTodo} onUpdateTodo={updateTodo} isLoading={isLoading} />
+      <hr />
+      <TodosViewForm sortField={sortField} setSortField={setSortField} sortDirection={sortDirection} setSortDirection={setSortDirection} />
       {errorMessage != "" ?
         <div>
           <hr />
