@@ -2,6 +2,7 @@ import './App.css'
 import { useState, useEffect } from 'react'
 import TodoList from './features/TodoList/TodoList'
 import TodoForm from './features/TodoForm'
+import TodosViewForm from './features/TodosViewForm'
 import { dbCall } from './api/airtable'
 
 function App() {
@@ -9,15 +10,18 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [sortField, setSortField] = useState("createdTime");
+  const [sortDirection, setSortDirection] = useState("desc");
+  const [queryString, setQueryString] = useState("");
 
   useEffect(() => {
     setIsLoading(true)
     fetchTodos();
-  }, [])
+  }, [sortDirection, sortField, queryString])
 
   const fetchTodos = async () => {
     try {
-      const result = await dbCall('GET');
+      const result = await dbCall('GET', null, { sortField, sortDirection, queryString });
 
       const fetchedToDos = result.records.map((record) => {
         const restructedToDo = { id: record.id }
@@ -42,7 +46,7 @@ function App() {
 
       const result = await dbCall('POST', {
         records: [{ fields: { title, isCompleted: false } }],
-      });
+      }, { sortField, sortDirection, queryString });
 
       const rec = result.records?.[0];
       const savedTodo = {
@@ -70,7 +74,7 @@ function App() {
           id: selectedToDo.id,
           fields: { title: selectedToDo.title, isCompleted: true },
         }],
-      });
+      }, { sortField, sortDirection, queryString });
 
       const updatedTodos = todoList.map((todo) => {
         if (todo.id === selectedToDo.id) {
@@ -100,7 +104,7 @@ function App() {
           id: editedTodo.id,
           fields: { title: workingTitle, isCompleted: editedTodo.isCompleted },
         }],
-      });
+      }, { sortField, sortDirection, queryString });
 
       const updatedTodos = todoList.map((todo) => {
         if (todo.id === editedTodo.id) {
@@ -127,6 +131,8 @@ function App() {
       <h1>Todo List</h1>
       <TodoForm addToDo={addToDo} isSaving={isSaving} />
       <TodoList todos={filteredTodoList} onCompleteTodo={completeTodo} onUpdateTodo={updateTodo} isLoading={isLoading} />
+      <hr />
+      <TodosViewForm sortField={sortField} setSortField={setSortField} sortDirection={sortDirection} setSortDirection={setSortDirection} queryString={queryString} setQueryString={setQueryString}/>
       {errorMessage != "" ?
         <div>
           <hr />
