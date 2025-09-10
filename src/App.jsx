@@ -1,5 +1,5 @@
 import './App.css'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import TodoList from './features/TodoList/TodoList'
 import TodoForm from './features/TodoForm'
 import TodosViewForm from './features/TodosViewForm'
@@ -19,28 +19,27 @@ function App() {
     fetchTodos();
   }, [sortDirection, sortField, queryString])
 
-  const fetchTodos = async () => {
+  const fetchTodos = useCallback(async () => {
     try {
+      setIsLoading(true)
       const result = await dbCall('GET', null, { sortField, sortDirection, queryString });
 
-      const fetchedToDos = result.records.map((record) => {
-        const restructedToDo = { id: record.id }
-        restructedToDo.isCompleted = record.fields.isCompleted ?? false;
-        restructedToDo.title = record.fields.title ?? "";
-        return restructedToDo
-      })
+      const fetchedToDos = result.records.map((record) => ({
+        id: record.id,
+        isCompleted: record.fields.isCompleted ?? false,
+        title: record.fields.title ?? "",
+      }));
 
-      setTodoList(fetchedToDos)
+      setTodoList(fetchedToDos);
     } catch (error) {
       console.log(error)
       setErrorMessage(error.status)
     } finally {
       setIsLoading(false)
     }
+  }, [sortField, sortDirection, queryString]);
 
-  }
-
-  const addToDo = async (title) => {
+  const addToDo = useCallback(async (title) => {
     try {
       setIsSaving(true)
 
@@ -55,17 +54,16 @@ function App() {
         isCompleted: !!rec.fields?.isCompleted,
       };
 
-      setTodoList([...todoList, savedTodo]);
-
+      setTodoList((prev) => [...prev, savedTodo]);
     } catch (error) {
       console.error('Cannot post ToDo')
       setErrorMessage(`Response status: ${error.status}`)
     } finally {
       setIsSaving(false)
     }
-  }
+  }, [sortField, sortDirection, queryString]);
 
-  const completeTodo = async (selectedToDo) => {
+  const completeTodo = useCallback(async (selectedToDo) => {
     try {
       setIsSaving(true)
 
@@ -76,26 +74,21 @@ function App() {
         }],
       }, { sortField, sortDirection, queryString });
 
-      const updatedTodos = todoList.map((todo) => {
-        if (todo.id === selectedToDo.id) {
-          return { ...todo, isCompleted: true }
-        } else {
-          return todo
-        }
-      })
-      setTodoList(updatedTodos)
-
+      setTodoList((prev) =>
+        prev.map((todo) =>
+          todo.id === selectedToDo.id ? { ...todo, isCompleted: true } : todo
+        )
+      );
 
     } catch (error) {
       console.error('Cannot complete ToDo')
       setErrorMessage(`Response status: ${error.message}`)
-      return
     } finally {
       setIsSaving(false)
     }
-  }
+  }, [sortField, sortDirection, queryString]);
 
-  const updateTodo = async (editedTodo, workingTitle) => {
+  const updateTodo = useCallback(async (editedTodo, workingTitle) => {
     try {
       setIsSaving(true)
 
@@ -106,23 +99,19 @@ function App() {
         }],
       }, { sortField, sortDirection, queryString });
 
-      const updatedTodos = todoList.map((todo) => {
-        if (todo.id === editedTodo.id) {
-          return { ...todo, title: workingTitle }
-        } else {
-          return todo
-        }
-      })
-      setTodoList(updatedTodos)
+      setTodoList((prev) =>
+        prev.map((todo) =>
+          todo.id === editedTodo.id ? { ...todo, title: workingTitle } : todo
+        )
+      );
 
     } catch (error) {
       console.error('Cannot edit ToDo')
       setErrorMessage(`Response status: ${error.status}`)
-      return
     } finally {
       setIsSaving(false)
     }
-  }
+  }, [sortField, sortDirection, queryString]);
 
   const filteredTodoList = todoList.filter((todo) => todo.isCompleted != true)
 
@@ -132,7 +121,7 @@ function App() {
       <TodoForm addToDo={addToDo} isSaving={isSaving} />
       <TodoList todos={filteredTodoList} onCompleteTodo={completeTodo} onUpdateTodo={updateTodo} isLoading={isLoading} />
       <hr />
-      <TodosViewForm sortField={sortField} setSortField={setSortField} sortDirection={sortDirection} setSortDirection={setSortDirection} queryString={queryString} setQueryString={setQueryString}/>
+      <TodosViewForm sortField={sortField} setSortField={setSortField} sortDirection={sortDirection} setSortDirection={setSortDirection} queryString={queryString} setQueryString={setQueryString} />
       {errorMessage != "" ?
         <div>
           <hr />
