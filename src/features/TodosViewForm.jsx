@@ -1,6 +1,13 @@
 import styles from '../css/TodosViewForm.module.css'
 import { useState, useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
+import styled from 'styled-components';
+
+const StyledLabel = styled.label`
+    font-size: 14px;
+    font-weight: 500;
+    margin-right: 5px;
+`;
 
 function TodosViewForm({ sortField, setSortField, sortDirection, setSortDirection, queryString, setQueryString }) {
 
@@ -34,12 +41,12 @@ function TodosViewForm({ sortField, setSortField, sortDirection, setSortDirectio
                 </div>
             </form >
             <form onSubmit={(e) => preventRefresh(e)}>
-                <label>Sort by</label>
+                <StyledLabel>Sort by</StyledLabel>
                 <select value={sortField} onChange={(e) => setSortField(e.target.value)}>
                     <option value='title'>Title</option>
                     <option value='createdTime'>Time added</option>
                 </select>
-                <label>Direction</label>
+                <StyledLabel>Direction</StyledLabel>
                 <select value={sortDirection} onChange={(e) => setSortDirection(e.target.value)}>
                     <option value='asc'>Ascending</option>
                     <option value='desc'>Descending</option>
