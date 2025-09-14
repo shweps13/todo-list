@@ -1,4 +1,6 @@
+import styles from '../css/TodosViewForm.module.css'
 import { useState, useEffect } from "react";
+import { CiSearch } from "react-icons/ci";
 
 function TodosViewForm({ sortField, setSortField, sortDirection, setSortDirection, queryString, setQueryString }) {
 
@@ -20,12 +22,16 @@ function TodosViewForm({ sortField, setSortField, sortDirection, setSortDirectio
     }
 
     return (
-        <>
+        <div className={styles.viewForm}>
             <form onSubmit={(e) => preventRefresh(e)}>
                 <label>Search todos:</label>
-                <input type="text"
-                    value={localQueryString}
-                    onChange={(e) => { setLocalQueryString(e.target.value) }} />
+                <div className={styles.searchInputWrapper}>
+                    <CiSearch className={styles.searchIcon} />
+                    <input type="text"
+                        placeholder="Search todos..."
+                        value={localQueryString}
+                        onChange={(e) => { setLocalQueryString(e.target.value) }} />
+                </div>
             </form >
             <form onSubmit={(e) => preventRefresh(e)}>
                 <label>Sort by</label>
@@ -39,7 +45,7 @@ function TodosViewForm({ sortField, setSortField, sortDirection, setSortDirectio
                     <option value='desc'>Descending</option>
                 </select>
             </form>
-        </>
+        </div>
     )
 }
 

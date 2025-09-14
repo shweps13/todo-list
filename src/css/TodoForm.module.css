@@ -20,7 +20,7 @@
 }
 
 .mainForm input::placeholder {
-    color: lightgray;
+    color: grey;
     padding-left: 5px;
 }
 
