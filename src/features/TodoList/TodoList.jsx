@@ -2,6 +2,7 @@ import styles from '../../css/TodoList.module.css'
 import { useState } from 'react';
 import TodoListItem from './TodoListItem'
 import { ClipLoader } from "react-spinners";
+import { PiSealWarningLight } from "react-icons/pi";
 
 const override = {
     display: "block",
@@ -25,18 +26,25 @@ function TodoList({ todos, onCompleteTodo, onUpdateTodo, isLoading }) {
                         />
                     </>
                     :
-
-                    <ul>
-                        {todos.map(todo => {
-                            return <TodoListItem
-                                key={todo.id}
-                                todo={todo}
-                                onCompleteTodo={() => onCompleteTodo(todo)}
-                                onUpdateTodo={onUpdateTodo}
-                                currEditingId={currEditingId}
-                                setCurrEditingId={setCurrEditingId} />;
-                        })}
-                    </ul>
+                    <>
+                        {todos.length > 0 ? 
+                        <ul>
+                            {todos.map(todo => {
+                                return <TodoListItem
+                                    key={todo.id}
+                                    todo={todo}
+                                    onCompleteTodo={() => onCompleteTodo(todo)}
+                                    onUpdateTodo={onUpdateTodo}
+                                    currEditingId={currEditingId}
+                                    setCurrEditingId={setCurrEditingId} />;
+                            })}
+                        </ul>
+                    : 
+                    <div className={styles.noTodos}>
+                        <PiSealWarningLight /> No ToDos founded
+                    </div>
+                }
+                    </>
             }
         </div>
     );
