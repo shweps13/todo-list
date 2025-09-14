@@ -14,6 +14,7 @@ function TextInputWithLabel({
                 type="text"
                 id={elementId}
                 name="title"
+                placeholder="Add a new task..."
                 ref={ref}
                 value={value}
                 onChange={onChange}

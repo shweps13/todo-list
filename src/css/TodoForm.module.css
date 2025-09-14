@@ -1,0 +1,43 @@
+.mainForm{
+    width: calc(100% - 40px);
+    margin: 0 20px;
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.mainForm label {
+    display: none;
+}
+
+.mainForm input {
+    width: calc(100% - 30px);
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    padding-left: 10px;
+}
+
+.mainForm input::placeholder {
+    color: lightgray;
+    padding-left: 5px;
+}
+
+input.middle:focus {
+    outline-width: 0;
+}
+
+.mainForm button {
+    border-radius: 50%;
+    background: #6a5bcdff;
+    color: white;
+    border: none;
+    margin-left: 10px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+.mainForm button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
