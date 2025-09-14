@@ -5,6 +5,7 @@ import TodoForm from './features/TodoForm'
 import TodosViewForm from './features/TodosViewForm'
 import { dbCall } from './api/airtable'
 import { MdDoneAll } from "react-icons/md";
+import { PiWarningCircleFill } from "react-icons/pi";
 
 function App() {
   const [todoList, setTodoList] = useState([]);
@@ -126,11 +127,9 @@ function App() {
       <TodosViewForm sortField={sortField} setSortField={setSortField} sortDirection={sortDirection} setSortDirection={setSortDirection} queryString={queryString} setQueryString={setQueryString} />
       {errorMessage != "" ?
         <div className={styles.errorMessage}>
-          <hr />
-          <p>Error happened</p>
+          <p><PiWarningCircleFill /> Error happened</p>
           <p>{errorMessage}</p>
           <button onClick={() => { setErrorMessage("") }}>Dismiss</button>
-          <hr />
         </div>
         : <></>}
     </div>

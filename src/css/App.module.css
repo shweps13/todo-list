@@ -37,5 +37,36 @@
 }
 
 .errorMessage {
-    border: 1px solid grey;
+    text-align: center;
+    padding: 10px 0 20px 0;
+    color: red;
+    font-size: 16px;
+    background-color: rgb(255, 222, 222);
+    border-radius: 8px;
+    margin: 25px;
+    border: 1px dashed red;
+    position: relative;
+    width: calc(100% - 50px);
+}
+
+.errorMessage svg {
+    position: relative;
+    top: 8px;
+    width: 30px;
+    height: 30px;
+    color: red;
+}
+
+.errorMessage p:nth-child(1) {
+    font-weight: 600;
+    margin: 10px 0 5px 0;
+    font-size: 18px;
+}
+
+.errorMessage button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
 }
