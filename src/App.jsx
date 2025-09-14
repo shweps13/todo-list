@@ -1,4 +1,4 @@
-import './App.css'
+import styles from './css/App.module.css'
 import { useState, useEffect, useCallback } from 'react'
 import TodoList from './features/TodoList/TodoList'
 import TodoForm from './features/TodoForm'
@@ -116,14 +116,14 @@ function App() {
   const filteredTodoList = todoList.filter((todo) => todo.isCompleted != true)
 
   return (
-    <div>
+    <div className={styles.mainFrame}>
       <h1>Todo List</h1>
       <TodoForm addToDo={addToDo} isSaving={isSaving} />
       <TodoList todos={filteredTodoList} onCompleteTodo={completeTodo} onUpdateTodo={updateTodo} isLoading={isLoading} />
       <hr />
       <TodosViewForm sortField={sortField} setSortField={setSortField} sortDirection={sortDirection} setSortDirection={setSortDirection} queryString={queryString} setQueryString={setQueryString} />
       {errorMessage != "" ?
-        <div>
+        <div className={styles.errorMessage}>
           <hr />
           <p>Error happened</p>
           <p>{errorMessage}</p>

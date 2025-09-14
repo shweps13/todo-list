@@ -1,0 +1,12 @@
+.mainFrame {
+    background-color: lightblue;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.errorMessage {
+    border: 1px solid grey;
+}
