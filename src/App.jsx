@@ -4,6 +4,7 @@ import TodoList from './features/TodoList/TodoList'
 import TodoForm from './features/TodoForm'
 import TodosViewForm from './features/TodosViewForm'
 import { dbCall } from './api/airtable'
+import { MdDoneAll } from "react-icons/md";
 
 function App() {
   const [todoList, setTodoList] = useState([]);
@@ -117,7 +118,8 @@ function App() {
 
   return (
     <div className={styles.mainFrame}>
-      <h1>Todo List</h1>
+      
+      <h1><MdDoneAll /> FocusFlow</h1>
       <TodoForm addToDo={addToDo} isSaving={isSaving} />
       <TodoList todos={filteredTodoList} onCompleteTodo={completeTodo} onUpdateTodo={updateTodo} isLoading={isLoading} />
       <hr />

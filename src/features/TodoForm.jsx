@@ -1,6 +1,8 @@
 import styles from '../css/TodoForm.module.css'
 import { useRef, useState } from "react"
 import TextInputWithLabel from "../shared/TextInputWithLabel"
+import { HiPlus } from "react-icons/hi";
+import { MdSaveAs } from "react-icons/md";
 
 function TodoForm({ addToDo, isSaving }) {
 
@@ -25,7 +27,7 @@ function TodoForm({ addToDo, isSaving }) {
                 onChange={(e) => setWorkingTodoTitle(e.target.value)} 
                 />
             <button disabled={workingTodoTitle === ''} >
-                {isSaving ? 'Saving...' : '+'}
+                {isSaving ? <MdSaveAs /> : <HiPlus />}
             </button>
         </form>
     )
