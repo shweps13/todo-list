@@ -1,0 +1,9 @@
+.mainContent{
+    width: 100%;
+}
+
+.mainContent ul{
+    list-style-type: none;
+    padding: 10px 20px;
+    margin: 0;
+}

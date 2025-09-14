@@ -1,14 +1,30 @@
-import '../../css/TodoList.module.css'
+import styles from '../../css/TodoList.module.css'
 import { useState } from 'react';
 import TodoListItem from './TodoListItem'
+import { ClipLoader } from "react-spinners";
+
+const override = {
+    display: "block",
+    margin: "10px auto",
+    borderColor: "#6a5bcdff",
+};
 
 function TodoList({ todos, onCompleteTodo, onUpdateTodo, isLoading }) {
     const [currEditingId, setCurrEditingId] = useState(null);
 
     return (
-        <div>
+        <div className={styles.mainContent}>
             {
-                isLoading ?  <p>ToDo list is loading...</p> :
+                isLoading ?
+                    <>
+                        <ClipLoader
+                            cssOverride={override}
+                            size={65}
+                            aria-label="Loading Spinner"
+                            data-testid="loader"
+                        />
+                    </>
+                    :
 
                     <ul>
                         {todos.map(todo => {
