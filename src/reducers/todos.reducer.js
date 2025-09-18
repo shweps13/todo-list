@@ -29,8 +29,8 @@ function reducer(state = initialState, action) {
     switch (action.type) {
         case actions.fetchTodos:
             return {
-                isLoading: true,
-                ...state
+                ...state,
+                isLoading: true
             }
         case actions.loadTodos:
             const fetchedToDos = action.records.map((record) => ({
@@ -38,22 +38,23 @@ function reducer(state = initialState, action) {
                 isCompleted: record.fields.isCompleted ?? false,
                 title: record.fields.title ?? "",
             }));
-            return {
+            const newState = {
+                ...state,
                 todoList: fetchedToDos,
                 isLoading: false,
-                ...state,
             };
+            return newState;
         case actions.setLoadError:
             return {
-                errorMessage: action.error.message,
-                isLoading: false,
                 ...state,
+                errorMessage: action.error.message || "Unknown error",
+                isLoading: false,
             };
 
         case actions.startRequest:
             return {
-                isSaving: true,
                 ...state,
+                isSaving: true,
             };
         case actions.addTodo:
             const savedTodo = {
@@ -62,9 +63,9 @@ function reducer(state = initialState, action) {
                 isCompleted: !!action.records[0].fields?.isCompleted,
             };
             return {
+                ...state,
                 todoList: [...state.todoList, savedTodo],
                 isSaving: false,
-                ...state,
             };
         case actions.endRequest:
             return {
@@ -75,12 +76,12 @@ function reducer(state = initialState, action) {
         case actions.revertTodo:
         case actions.updateTodo:
             const updatedTodos = state.todoList.map((todo) => 
-                todo.id === action.editedTodo.id ? { ...todo, title: action.editedTodo.title } : todo
+                todo.id === action.records[0].id ? { ...todo, title: action.records[0].title } : todo
             );
             const updatedState = {
+                ...state,
                 todoList: updatedTodos,
                 isSaving: false,
-                ...state,
             };
             if (action.error) {
                 updatedState.errorMessage = action.error.message;
@@ -88,19 +89,19 @@ function reducer(state = initialState, action) {
             return updatedState;
         case actions.completeTodo:
             const completedTodos = state.todoList.map((todo) => 
-                todo.id === action.completedTodo.id ? { ...todo, isCompleted: true } : todo
+                todo.id === action.records[0].id ? { ...todo, isCompleted: true } : todo
             );
             return {
+                ...state,
                 todoList: completedTodos,
                 isSaving: false,
-                ...state,
             };
         case actions.clearError:
             return {
-                errorMessage: "",
                 ...state,
+                errorMessage: "",
             };
     }
 }
 
-export { initialState, actions }
+export { initialState, actions, reducer }

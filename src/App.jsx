@@ -1,5 +1,5 @@
 import styles from './css/App.module.css'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useReducer } from 'react'
 import TodoList from './features/TodoList/TodoList'
 import TodoForm from './features/TodoForm'
 import TodosViewForm from './features/TodosViewForm'
@@ -7,67 +7,54 @@ import { dbCall } from './api/airtable'
 import { MdDoneAll } from "react-icons/md";
 import { PiWarningCircleFill } from "react-icons/pi";
 
+import {
+  reducer as todosReducer,
+  actions as todosActions,
+  initialState as todosInitialState
+} from './reducers/todos.reducer'
+
 function App() {
-  const [todoList, setTodoList] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [todoState, dispatch] = useReducer(todosReducer, todosInitialState);
+
   const [sortField, setSortField] = useState("createdTime");
   const [sortDirection, setSortDirection] = useState("desc");
   const [queryString, setQueryString] = useState("");
 
   useEffect(() => {
-    setIsLoading(true)
-    fetchTodos();
+    fetchTodos(); 
   }, [sortDirection, sortField, queryString])
-
+  
   const fetchTodos = useCallback(async () => {
     try {
-      setIsLoading(true)
+      dispatch({ type: todosActions.fetchTodos });
+      
       const result = await dbCall('GET', null, { sortField, sortDirection, queryString });
 
-      const fetchedToDos = result.records.map((record) => ({
-        id: record.id,
-        isCompleted: record.fields.isCompleted ?? false,
-        title: record.fields.title ?? "",
-      }));
-
-      setTodoList(fetchedToDos);
+      dispatch({ type: todosActions.loadTodos, records: result.records });
     } catch (error) {
-      console.log(error)
-      setErrorMessage(error.status)
-    } finally {
-      setIsLoading(false)
-    }
+      dispatch({ type: todosActions.setLoadError, error: error });
+    } 
   }, [sortField, sortDirection, queryString]);
 
   const addToDo = useCallback(async (title) => {
     try {
-      setIsSaving(true)
+      dispatch({ type: todosActions.startRequest });
 
       const result = await dbCall('POST', {
         records: [{ fields: { title, isCompleted: false } }],
       }, { sortField, sortDirection, queryString });
 
-      const rec = result.records?.[0];
-      const savedTodo = {
-        id: rec.id,
-        title: rec.fields?.title ?? "",
-        isCompleted: !!rec.fields?.isCompleted,
-      };
-
-      setTodoList((prev) => [...prev, savedTodo]);
+      dispatch({ type: todosActions.addTodo, records: [result.records?.[0]] });
     } catch (error) {
-      console.error('Cannot post ToDo')
-      setErrorMessage(`Response status: ${error.status}`)
+      dispatch({ type: todosActions.setLoadError, error: error });
     } finally {
-      setIsSaving(false)
+      dispatch({ type: todosActions.endRequest });
     }
   }, [sortField, sortDirection, queryString]);
 
   const completeTodo = useCallback(async (selectedToDo) => {
     try {
-      setIsSaving(true)
+      dispatch({ type: todosActions.startRequest });
 
       await dbCall('PATCH', {
         records: [{
@@ -76,23 +63,17 @@ function App() {
         }],
       }, { sortField, sortDirection, queryString });
 
-      setTodoList((prev) =>
-        prev.map((todo) =>
-          todo.id === selectedToDo.id ? { ...todo, isCompleted: true } : todo
-        )
-      );
-
+      dispatch({ type: todosActions.completeTodo, records: [selectedToDo] });
     } catch (error) {
-      console.error('Cannot complete ToDo')
-      setErrorMessage(`Response status: ${error.message}`)
+      dispatch({ type: todosActions.setLoadError, error: error });
     } finally {
-      setIsSaving(false)
+      dispatch({ type: todosActions.endRequest });
     }
   }, [sortField, sortDirection, queryString]);
 
   const updateTodo = useCallback(async (editedTodo, workingTitle) => {
     try {
-      setIsSaving(true)
+      dispatch({ type: todosActions.startRequest });
 
       await dbCall('PATCH', {
         records: [{
@@ -101,35 +82,29 @@ function App() {
         }],
       }, { sortField, sortDirection, queryString });
 
-      setTodoList((prev) =>
-        prev.map((todo) =>
-          todo.id === editedTodo.id ? { ...todo, title: workingTitle } : todo
-        )
-      );
-
+      dispatch({ type: todosActions.updateTodo, records: [{ ...editedTodo, title: workingTitle }] });
     } catch (error) {
-      console.error('Cannot edit ToDo')
-      setErrorMessage(`Response status: ${error.status}`)
+      dispatch({ type: todosActions.setLoadError, error: error });
     } finally {
-      setIsSaving(false)
+      dispatch({ type: todosActions.endRequest });
     }
   }, [sortField, sortDirection, queryString]);
 
-  const filteredTodoList = todoList.filter((todo) => todo.isCompleted != true)
+  const filteredTodoList = todoState.todoList.filter((todo) => todo.isCompleted != true)
 
   return (
     <div className={styles.mainFrame}>
-      
+
       <h1><MdDoneAll /> FocusFlow</h1>
-      <TodoForm addToDo={addToDo} isSaving={isSaving} />
-      <TodoList todos={filteredTodoList} onCompleteTodo={completeTodo} onUpdateTodo={updateTodo} isLoading={isLoading} />
+      <TodoForm addToDo={addToDo} isSaving={todoState.isSaving} />
+      <TodoList todos={filteredTodoList} onCompleteTodo={completeTodo} onUpdateTodo={updateTodo} isLoading={todoState.isLoading} />
       <hr />
       <TodosViewForm sortField={sortField} setSortField={setSortField} sortDirection={sortDirection} setSortDirection={setSortDirection} queryString={queryString} setQueryString={setQueryString} />
-      {errorMessage != "" ?
+      {todoState.errorMessage != "" ?
         <div className={styles.errorMessage}>
           <p><PiWarningCircleFill /> Error happened</p>
-          <p>{errorMessage}</p>
-          <button onClick={() => { setErrorMessage("") }}>Dismiss</button>
+          <p>{todoState.errorMessage}</p>
+          <button onClick={() => { dispatch({ type: todosActions.clearError }) }}>Dismiss</button>
         </div>
         : <></>}
     </div>
