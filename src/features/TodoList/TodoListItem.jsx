@@ -1,5 +1,23 @@
+import styles from '../../css/TodoListItem.module.css'
 import TextInputWithLabel from "../../shared/TextInputWithLabel";
 import { useState, useEffect, useRef } from "react";
+import { RiCheckboxBlankCircleLine, RiCheckboxCircleFill } from "react-icons/ri";
+import styled from 'styled-components';
+
+const CheckboxIcon = styled.div`
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    margin-right: 8px;
+    
+    svg {
+        position: relative;
+        top: 4px;
+        font-size: 20px;
+        color: #6a5bcd;
+    }
+    
+`;
 
 function TodoListItem({
     todo,
@@ -34,7 +52,7 @@ function TodoListItem({
     }, [isEditing, todo]);
 
     return (
-        <li>
+        <li className={styles.todoItem}>
             <form onSubmit={handleUpdate}>
                 {isEditing ? (
                     <>
@@ -48,11 +66,9 @@ function TodoListItem({
                     </>
                 ) : (
                     <>
-                        <input
-                            type="checkbox"
-                            checked={todo.isCompleted}
-                            onChange={onCompleteTodo}
-                        />
+                        <CheckboxIcon onClick={onCompleteTodo}>
+                            {todo.isCompleted ? <RiCheckboxCircleFill /> : <RiCheckboxBlankCircleLine />}
+                        </CheckboxIcon>
                         <span onClick={() => setCurrEditingId(todo.id)}>{todo.title}</span>
                     </>
                 )}

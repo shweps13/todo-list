@@ -1,0 +1,7 @@
+.mainForm{
+    width: calc(100% - 45px);
+    margin: 0 20px;
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
