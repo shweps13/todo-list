@@ -2,7 +2,10 @@ const initialState = {
     todoList: [],
     isLoading: false,
     isSaving: false,
-    errorMessage: ""
+    errorMessage: "",
+    sortDirection: "desc",
+    sortField: "createdTime",
+    queryString: ""
 }
 
 const actions = {
@@ -22,6 +25,10 @@ const actions = {
     revertTodo: 'revertTodo',
     //action on Dismiss Error button
     clearError: 'clearError',
+    //actions in TodosViewForm
+    setSortDirection: 'setSortDirection',
+    setSortField: 'setSortField',
+    setQueryString: 'setQueryString',
 };
 
 
@@ -100,6 +107,21 @@ function reducer(state = initialState, action) {
             return {
                 ...state,
                 errorMessage: "",
+            };
+        case actions.setSortDirection:
+            return {
+                ...state,
+                sortDirection: action.sortDirection,
+            };
+        case actions.setSortField:
+            return {
+                ...state,
+                sortField: action.sortField,
+            };
+        case actions.setQueryString:
+            return {
+                ...state,
+                queryString: action.queryString,
             };
     }
 }
