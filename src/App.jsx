@@ -110,20 +110,21 @@ function App() {
 
       <Header />
       <Routes>
-        <Route path="/" element={<TodosPage
-          addToDo={addToDo}
-          isSaving={todoState.isSaving}
-          todos={filteredTodoList}
-          onCompleteTodo={completeTodo}
-          onUpdateTodo={updateTodo}
-          isLoading={todoState.isLoading}
-          sortField={todoState.sortField}
-          setSortField={(value) => dispatch({ type: todosActions.setSortField, sortField: value })}
-          sortDirection={todoState.sortDirection}
-          setSortDirection={(value) => dispatch({ type: todosActions.setSortDirection, sortDirection: value })}
-          queryString={todoState.queryString}
-          setQueryString={(value) => dispatch({ type: todosActions.setQueryString, queryString: value })}
-        />} />
+        <Route path="/" element={
+          <TodosPage
+            addToDo={addToDo}
+            isSaving={todoState.isSaving}
+            todos={filteredTodoList}
+            onCompleteTodo={completeTodo}
+            onUpdateTodo={updateTodo}
+            isLoading={todoState.isLoading}
+            sortField={todoState.sortField}
+            setSortField={(value) => dispatch({ type: todosActions.setSortField, sortField: value })}
+            sortDirection={todoState.sortDirection}
+            setSortDirection={(value) => dispatch({ type: todosActions.setSortDirection, sortDirection: value })}
+            queryString={todoState.queryString}
+            setQueryString={(value) => dispatch({ type: todosActions.setQueryString, queryString: value })}
+          />} />
         <Route path="/about" element={<About />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
