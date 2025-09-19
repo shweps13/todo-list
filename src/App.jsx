@@ -1,11 +1,10 @@
 import styles from './css/App.module.css'
 import { useEffect, useCallback, useReducer } from 'react'
-import TodoList from './features/TodoList/TodoList'
-import TodoForm from './features/TodoForm'
-import TodosViewForm from './features/TodosViewForm'
+import TodosPage from './pages/TodosPage'
+import Header from './shared/Header'
 import { dbCall } from './api/airtable'
-import { MdDoneAll } from "react-icons/md";
 import { PiWarningCircleFill } from "react-icons/pi";
+import { Routes, Route } from 'react-router'
 
 import {
   reducer as todosReducer,
@@ -17,23 +16,23 @@ function App() {
   const [todoState, dispatch] = useReducer(todosReducer, todosInitialState);
 
   useEffect(() => {
-    fetchTodos(); 
+    fetchTodos();
   }, [todoState.sortDirection, todoState.sortField, todoState.queryString])
-  
+
   const fetchTodos = useCallback(async () => {
     try {
       dispatch({ type: todosActions.fetchTodos });
-      
-      const result = await dbCall('GET', null, { 
-        sortField: todoState.sortField, 
-        sortDirection: todoState.sortDirection, 
-        queryString: todoState.queryString 
+
+      const result = await dbCall('GET', null, {
+        sortField: todoState.sortField,
+        sortDirection: todoState.sortDirection,
+        queryString: todoState.queryString
       });
 
       dispatch({ type: todosActions.loadTodos, records: result.records });
     } catch (error) {
       dispatch({ type: todosActions.setLoadError, error: error });
-    } 
+    }
   }, [todoState.sortField, todoState.sortDirection, todoState.queryString]);
 
   const addToDo = useCallback(async (title) => {
@@ -42,10 +41,10 @@ function App() {
 
       const result = await dbCall('POST', {
         records: [{ fields: { title, isCompleted: false } }],
-      }, { 
-        sortField: todoState.sortField, 
-        sortDirection: todoState.sortDirection, 
-        queryString: todoState.queryString 
+      }, {
+        sortField: todoState.sortField,
+        sortDirection: todoState.sortDirection,
+        queryString: todoState.queryString
       });
 
       dispatch({ type: todosActions.addTodo, records: [result.records?.[0]] });
@@ -65,10 +64,10 @@ function App() {
           id: selectedToDo.id,
           fields: { title: selectedToDo.title, isCompleted: true },
         }],
-      }, { 
-        sortField: todoState.sortField, 
-        sortDirection: todoState.sortDirection, 
-        queryString: todoState.queryString 
+      }, {
+        sortField: todoState.sortField,
+        sortDirection: todoState.sortDirection,
+        queryString: todoState.queryString
       });
 
       dispatch({ type: todosActions.completeTodo, records: [selectedToDo] });
@@ -88,10 +87,10 @@ function App() {
           id: editedTodo.id,
           fields: { title: workingTitle, isCompleted: editedTodo.isCompleted },
         }],
-      }, { 
-        sortField: todoState.sortField, 
-        sortDirection: todoState.sortDirection, 
-        queryString: todoState.queryString 
+      }, {
+        sortField: todoState.sortField,
+        sortDirection: todoState.sortDirection,
+        queryString: todoState.queryString
       });
 
       dispatch({ type: todosActions.updateTodo, records: [{ ...editedTodo, title: workingTitle }] });
@@ -107,18 +106,27 @@ function App() {
   return (
     <div className={styles.mainFrame}>
 
-      <h1><MdDoneAll /> FocusFlow</h1>
-      <TodoForm addToDo={addToDo} isSaving={todoState.isSaving} />
-      <TodoList todos={filteredTodoList} onCompleteTodo={completeTodo} onUpdateTodo={updateTodo} isLoading={todoState.isLoading} />
-      <hr />
-      <TodosViewForm 
-        sortField={todoState.sortField} 
-        setSortField={(value) => dispatch({ type: todosActions.setSortField, sortField: value })}
-        sortDirection={todoState.sortDirection} 
-        setSortDirection={(value) => dispatch({ type: todosActions.setSortDirection, sortDirection: value })}
-        queryString={todoState.queryString} 
-        setQueryString={(value) => dispatch({ type: todosActions.setQueryString, queryString: value })}
-      />
+      <Header />
+      <Routes>
+        <Route path="/" element={<TodosPage
+          addToDo={addToDo}
+          isSaving={todoState.isSaving}
+          todos={filteredTodoList}
+          onCompleteTodo={completeTodo}
+          onUpdateTodo={updateTodo}
+          isLoading={todoState.isLoading}
+          sortField={todoState.sortField}
+          setSortField={(value) => dispatch({ type: todosActions.setSortField, sortField: value })}
+          sortDirection={todoState.sortDirection}
+          setSortDirection={(value) => dispatch({ type: todosActions.setSortDirection, sortDirection: value })}
+          queryString={todoState.queryString}
+          setQueryString={(value) => dispatch({ type: todosActions.setQueryString, queryString: value })}
+        />} />
+        <Route path="/about" element={<h1>About</h1>} />
+        <Route path="*" element={<h1>Not Found</h1>} />
+      </Routes>
+
+
       {todoState.errorMessage != "" ?
         <div className={styles.errorMessage}>
           <p><PiWarningCircleFill /> Error happened</p>
