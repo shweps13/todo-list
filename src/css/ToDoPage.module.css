@@ -1,0 +1,24 @@
+.viewPage {
+    width: 100%;
+}
+
+.paginationControls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 15px;
+}
+
+.paginationControls button {
+    background-color: #6a5bcdff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.paginationControls button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

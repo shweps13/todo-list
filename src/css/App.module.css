@@ -9,27 +9,6 @@
     padding: 25px 0;
 }
 
-.mainFrame h1 {
-    margin: 0;
-    color: #6a5bcdff;
-    font-size: 36px;
-    line-height: 40px;
-    font-weight: 800;
-}
-
-.mainFrame h1 {
-    margin: 0;
-    color: #6a5bcdff;
-    font-size: 36px;
-    line-height: 40px;
-    font-weight: 700;
-}
-
-.mainFrame h1 svg{
-    position: relative;
-    top: 5px;
-}
-
 .mainFrame hr {
     border: 0.5px solid lightgrey;
     width: calc(100% - 50px);
