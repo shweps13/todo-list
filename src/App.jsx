@@ -1,7 +1,9 @@
 import styles from './css/App.module.css'
 import { useEffect, useCallback, useReducer } from 'react'
-import TodosPage from './pages/TodosPage'
 import Header from './shared/Header'
+import TodosPage from './pages/TodosPage'
+import About from './pages/About'
+import NotFound from './pages/NotFound'
 import { dbCall } from './api/airtable'
 import { PiWarningCircleFill } from "react-icons/pi";
 import { Routes, Route } from 'react-router'
@@ -122,8 +124,8 @@ function App() {
           queryString={todoState.queryString}
           setQueryString={(value) => dispatch({ type: todosActions.setQueryString, queryString: value })}
         />} />
-        <Route path="/about" element={<h1>About</h1>} />
-        <Route path="*" element={<h1>Not Found</h1>} />
+        <Route path="/about" element={<About />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
 
 
