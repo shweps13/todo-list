@@ -1,0 +1,45 @@
+.active {
+    color: #6a5bcdff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.inactive {
+    color: grey;
+    text-decoration: none;
+}
+
+.headerContainer {
+    position: relative;
+}
+
+h1 {
+    margin: 0;
+    color: #6a5bcdff;
+    font-size: 36px;
+    line-height: 40px;
+    font-weight: 700;
+}
+
+h1 svg{
+    position: relative;
+    top: 5px;
+    right: 10px;
+}
+
+h4 {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: flex-end;
+    font-weight: 400;
+    color: grey;
+}
+
+nav {
+    position: absolute;
+    top: 0;
+    right: -160px;
+    display: flex;
+    gap: 10px;
+}
